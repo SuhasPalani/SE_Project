@@ -29,7 +29,7 @@ const CalendarScreen = () => {
         id: taskToEdit ? taskToEdit.id : Date.now().toString(),
         task,
         priority,
-        date: taskToEdit ? taskToEdit.date : new Date(), // Task creation date
+        date: taskToEdit ? taskToEdit.date : new Date(),
         dueDate: date,
       };
       if (taskToEdit) {
@@ -44,19 +44,14 @@ const CalendarScreen = () => {
     }
   };
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'Urgent and Important':
-        return '#ff4c4c'; // Red
-      case 'Important but Not Urgent':
-        return '#ffb84d'; // Orange
-      case 'Urgent but Not Important':
-        return '#ffe600'; // Yellow
-      case 'Not Urgent and Not Important':
-        return '#4caf50'; // Green
-      default:
-        return 'gray';
-    }
+  const getPriorityColor = (priorityOption, isSelected) => {
+    const colors = {
+      'Urgent and Important': ['#ff4c4c', '#ff8080'],
+      'Important but Not Urgent': ['#ffb84d', '#ffd699'],
+      'Urgent but Not Important': ['#ffe600', '#fff566'],
+      'Not Urgent and Not Important': ['#4caf50', '#80e27e'],
+    };
+    return colors[priorityOption][isSelected ? 1 : 0];
   };
 
   return (
@@ -103,7 +98,10 @@ const CalendarScreen = () => {
         {['Urgent and Important', 'Important but Not Urgent', 'Urgent but Not Important', 'Not Urgent and Not Important'].map((priorityOption) => (
           <TouchableOpacity
             key={priorityOption}
-            style={[styles.priorityOption, { backgroundColor: getPriorityColor(priorityOption) }]}
+            style={[
+              styles.priorityOption,
+              { backgroundColor: getPriorityColor(priorityOption, priority === priorityOption) }
+            ]}
             onPress={() => setPriority(priorityOption)}
           >
             <Text style={styles.priorityText}>{priorityOption}</Text>
