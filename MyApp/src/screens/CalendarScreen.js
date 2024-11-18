@@ -1,12 +1,21 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { TaskContext } from './TaskContext';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useState, useContext, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { TaskContext } from "./TaskContext";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const CalendarScreen = () => {
-  const [task, setTask] = useState('');
-  const [priority, setPriority] = useState('');
+  const [task, setTask] = useState("");
+  const [priority, setPriority] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [date, setDate] = useState(new Date());
@@ -37,70 +46,94 @@ const CalendarScreen = () => {
       } else {
         addTask(newTask);
       }
-      Alert.alert('Success', `Task ${taskToEdit ? 'updated' : 'added'} successfully!`);
+      Alert.alert(
+        "Success",
+        `Task ${taskToEdit ? "updated" : "added"} successfully!`
+      );
       navigation.goBack();
     } else {
-      Alert.alert('Error', 'Please fill in all fields.');
+      Alert.alert("Error", "Please fill in all fields.");
     }
   };
 
-  const getPriorityColor = (priorityOption, isSelected) => {
+  const getPriorityColor = (priorityOption) => {
     const colors = {
-      'Urgent and Important': ['#ff4c4c', '#ff8080'],
-      'Important but Not Urgent': ['#ffb84d', '#ffd699'],
-      'Urgent but Not Important': ['#ffe600', '#fff566'],
-      'Not Urgent and Not Important': ['#4caf50', '#80e27e'],
+      "Urgent and Important": "#FF4136",
+      "Important but Not Urgent": "#FF851B",
+      "Urgent but Not Important": "#FFDC00",
+      "Not Urgent and Not Important": "#2ECC40",
     };
-    return colors[priorityOption][isSelected ? 1 : 0];
+    return colors[priorityOption];
   };
 
+  const renderDateTimePicker = (mode) => (
+    <DateTimePicker
+      value={date}
+      mode={mode}
+      is24Hour={true}
+      display="default"
+      onChange={(event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        mode === "date" ? setShowDatePicker(false) : setShowTimePicker(false);
+        setDate(currentDate);
+      }}
+    />
+  );
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{taskToEdit ? 'Edit Task' : 'Create Task'}</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your task"
-        value={task}
-        onChangeText={setTask}
-      />
-      <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
-        <Text style={styles.dateButtonText}>Select Due Date</Text>
-      </TouchableOpacity>
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            const currentDate = selectedDate || date;
-            setShowDatePicker(false);
-            setDate(currentDate);
-          }}
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>
+        {taskToEdit ? "Edit Task" : "Create Task"}
+      </Text>
+      <View style={styles.inputContainer}>
+        <Icon
+          name="assignment"
+          size={24}
+          color="#007AFF"
+          style={styles.inputIcon}
         />
-      )}
-      <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)}>
-        <Text style={styles.timeButtonText}>Select Due Time</Text>
-      </TouchableOpacity>
-      {showTimePicker && (
-        <DateTimePicker
-          value={date}
-          mode="time"
-          display="default"
-          onChange={(event, selectedTime) => {
-            const currentTime = selectedTime || date;
-            setShowTimePicker(false);
-            setDate(currentTime);
-          }}
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your task"
+          value={task}
+          onChangeText={setTask}
+          placeholderTextColor="#999"
         />
-      )}
+      </View>
+      <TouchableOpacity
+        style={styles.dateTimeButton}
+        onPress={() => setShowDatePicker(true)}
+      >
+        <Icon name="event" size={24} color="#FFF" />
+        <Text style={styles.dateTimeButtonText}>
+          {date.toLocaleDateString()}
+        </Text>
+      </TouchableOpacity>
+      {showDatePicker && renderDateTimePicker("date")}
+      <TouchableOpacity
+        style={styles.dateTimeButton}
+        onPress={() => setShowTimePicker(true)}
+      >
+        <Icon name="access-time" size={24} color="#FFF" />
+        <Text style={styles.dateTimeButtonText}>
+          {date.toLocaleTimeString()}
+        </Text>
+      </TouchableOpacity>
+      {showTimePicker && renderDateTimePicker("time")}
+      <Text style={styles.priorityLabel}>Set Priority:</Text>
       <View style={styles.priorityContainer}>
-        <Text style={styles.priorityLabel}>Set Priority:</Text>
-        {['Urgent and Important', 'Important but Not Urgent', 'Urgent but Not Important', 'Not Urgent and Not Important'].map((priorityOption) => (
+        {[
+          "Urgent and Important",
+          "Important but Not Urgent",
+          "Urgent but Not Important",
+          "Not Urgent and Not Important",
+        ].map((priorityOption) => (
           <TouchableOpacity
             key={priorityOption}
             style={[
               styles.priorityOption,
-              { backgroundColor: getPriorityColor(priorityOption, priority === priorityOption) }
+              { backgroundColor: getPriorityColor(priorityOption) },
+              priority === priorityOption && styles.selectedPriority,
             ]}
             onPress={() => setPriority(priorityOption)}
           >
@@ -108,8 +141,12 @@ const CalendarScreen = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <Button title={taskToEdit ? 'Update Task' : 'Add Task'} onPress={handleSaveTask} />
-    </View>
+      <TouchableOpacity style={styles.saveButton} onPress={handleSaveTask}>
+        <Text style={styles.saveButtonText}>
+          {taskToEdit ? "Update Task" : "Add Task"}
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
@@ -117,59 +154,81 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#1E1E1E",
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: "bold",
     marginBottom: 20,
+    color: "#FFFFFF",
+    textAlign: "center",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    elevation: 2,
+  },
+  inputIcon: {
+    marginRight: 10,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 20,
-    borderRadius: 5,
+    flex: 1,
+    padding: 15,
+    fontSize: 16,
+    color: "#1E1E1E",
   },
-  dateButton: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  dateButtonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  timeButton: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
+  dateTimeButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 10,
     marginBottom: 20,
   },
-  timeButtonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
+  dateTimeButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
+  priorityLabel: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#FFFFFF",
   },
   priorityContainer: {
     marginBottom: 20,
   },
-  priorityLabel: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  priorityOption: {
+    padding: 15,
+    borderRadius: 10,
     marginBottom: 10,
   },
-  priorityOption: {
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
+  selectedPriority: {
+    borderWidth: 2,
+    borderColor: "#000",
   },
   priorityText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "#FFF",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 16,
+  },
+  saveButton: {
+    backgroundColor: "#4CAF50",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 

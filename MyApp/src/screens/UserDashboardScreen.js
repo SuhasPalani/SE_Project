@@ -2,6 +2,14 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const UserDashboardScreen = ({ navigation }) => {
+  const handleLogout = () => {
+    // Add any logout logic here (e.g., clearing user session)
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Dashboard</Text>
@@ -47,6 +55,13 @@ const UserDashboardScreen = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Self-Assessment & Feedback</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, styles.logoutButton]}
+        onPress={handleLogout}
+      >
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -77,6 +92,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     textAlign: 'center',
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    marginTop: 20,
   },
 });
 

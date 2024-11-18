@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, Alert } from 'react-native';
-import * as Animatable from 'react-native-animatable';
+import React, { useState } from "react";
+import { View, Text, Button, TextInput, StyleSheet, Alert } from "react-native";
+import * as Animatable from "react-native-animatable";
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogin = () => {
-    if (email === 'Test' && password === 'Test') {
-      navigation.navigate('UserDashboard');
+    if (email === "teamindia@hawk.com" && password === "teamindia") {
+      navigation.navigate("UserDashboard");
     } else {
-      setErrorMessage('Invalid email or password');
+      setErrorMessage("Invalid email or password");
       // You can also use Alert to show a popup message
       // Alert.alert('Error', 'Invalid email or password');
     }
@@ -36,12 +36,17 @@ const LoginScreen = ({ navigation }) => {
           value={password}
           onChangeText={setPassword}
         />
-        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+        {errorMessage ? (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        ) : null}
         <Button title="Login" onPress={handleLogin} color="#4CAF50" />
       </Animatable.View>
       <Text style={styles.signupText}>
-        New user?{' '}
-        <Text style={styles.signupLink} onPress={() => navigation.navigate('Signup')}>
+        New user?{" "}
+        <Text
+          style={styles.signupLink}
+          onPress={() => navigation.navigate("Signup")}
+        >
           Sign up
         </Text>
       </Text>
@@ -52,40 +57,40 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: "#1E1E1E",
   },
   title: {
     fontSize: 30,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
     marginBottom: 20,
   },
   inputContainer: {
-    width: '100%',
+    width: "100%",
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
-    width: '100%',
+    width: "100%",
     marginBottom: 10,
     paddingHorizontal: 10,
     borderRadius: 5,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginBottom: 10,
   },
   signupText: {
     marginTop: 10,
-    color: '#B0BEC5',
+    color: "#B0BEC5",
   },
   signupLink: {
-    color: 'blue',
+    color: "blue",
   },
 });
 
